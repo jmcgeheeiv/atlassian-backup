@@ -56,8 +56,8 @@ m confluence-20??-??-??-*z
 ## History
 
 Matt Kirby of Puppet Labs created
-`[jira-backup](https://github.com/puppetlabs/jira-backup)` to back up JIRA alone.
+[jira-backup](https://github.com/puppetlabs/jira-backup) to back up JIRA alone.
 
 John McGehee of Wave Computing enhanced `jira-backup` to back up Confluence as
 well as JIRA.  To reflect the new functionality, the application was renamed
-`[atlassian-backup](https://github.com/jmcgeheeiv/atlassian-backup)`.
+[atlassian-backup](https://github.com/jmcgeheeiv/atlassian-backup).
