@@ -1,13 +1,12 @@
 # atlassian-backup
-Back Up Atlassian Databases
 
 This tool backs up JIRA Server and Confluence Server databases according the
 [best practices outlined by Atlassian](https://confluence.atlassian.com/adminjiraserver072/backing-up-data-828788079.html).
 
 ## Config file
 The backups are controlled by a config file.  The example config file
-`atlassian-backup.conf` contains documentation on the variables that can be set
-in the config file.  It also contains example values.
+`bin/atlassian-backup.conf` contains documentation on the variables that can be
+set in the config file.  It also contains example values.
 
 ## Running atlassian-backup
 The default config file location is `/etc/atlassian-backup.conf`, but ordinarily
@@ -16,7 +15,7 @@ you specify the config file on the command line:
 atlassian-backup [config_file]
 ```
 
-As it runs `atlassian-backup` tells you what it is doing:
+As it runs, `atlassian-backup` tells you what it is doing:
 ```
 Backing up JIRA
   - Backing up JIRA attachments
@@ -31,10 +30,9 @@ Backing up Confluence
     Created /atlassian/backups/confluence/confluence-2017-11-07-19-34-attachments.tgz
   - Dumping Confluence database
     Created /atlassian/backups/confluence/confluence-2017-11-07-19-34-database-dump.sql.
-gz
 ```
 
-## Running with cron
+## Scheduling automatic backups with cron
 On UNIX it is convenient to run `atlassian-backup` using cron.  Edit your cron
 table using the command:
 ```
@@ -59,7 +57,7 @@ m confluence-20??-??-??-*z
 
 Matt Kirby of Puppet Labs created
 `[jira-backup](https://github.com/puppetlabs/jira-backup)` to back up JIRA alone.
-This supported MySQL.
 
-John McGehee of Wave Computing enhanced `jira-backup` to back up Confluence and
-support PostgreSQL.
+John McGehee of Wave Computing enhanced `jira-backup` to back up Confluence as
+well as JIRA.  To reflect the new functionality, the application was renamed
+`[atlassian-backup](https://github.com/jmcgeheeiv/atlassian-backup)`.
