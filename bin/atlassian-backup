@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+# Back up Atlassian tool databases.
+#
+# Usage:
+#    atlassian-backup [config_file]
+# The default config file is /etc/atlassian-backup.conf
+#
+# This project is licensed under the terms of the Apache 2.0 license.
+#
+# Copyright 2013 Puppet Labs
+#    Matt Kirby
+#
+# Copyright 2015-2017 Wave Computing, Inc.
+#    John McGehee
+
+if [[ $# == 0 ]]; then
+    CONFIG_FILE='/etc/atlassian-backup.conf'
+else
+    CONFIG_FILE=$1
+fi
+
+function read_config_file() {
+    if [ -r ${CONFIG_FILE} ]; then
+        source ${CONFIG_FILE}
+    else
+        echo "Error: Configuratiion file '${CONFIG_FILE}' is missing or unreadable."
+        exit 1
+    fi
+}
+
+function setup() {
+    TOOL_NAME=$(echo "$NATURAL_TOOL_NAME" | tr '[a-z]' '[A-Z]')
+    eval BACKUP_DIR="\$${TOOL_NAME}_BACKUP_DIR"
+    eval ATTACHMENTS_PATH="\$${TOOL_NAME}_ATTACHMENTS_PATH"
+    eval CONFIGURATION_PATH="\$${TOOL_NAME}_CONFIGURATION_PATH"
+    eval DB_NAME="\$${TOOL_NAME}_DB_NAME"
+
+    LC_TOOL_NAME=$(echo "$NATURAL_TOOL_NAME" | tr '[A-Z]' '[a-z]')
+    OUTPUT_PREFIX="$BACKUP_DIR/${LC_TOOL_NAME}-${TIMESTAMP}"
+
+    if [ ! -d "$BACKUP_DIR" ]; then
+        echo "Creating directory $BACKUP_DIR"
+        mkdir -p "$BACKUP_DIR"
+    fi
+}
+
+function backup_attachments() {
+    echo "  - Backing up $NATURAL_TOOL_NAME attachments"
+    ATTACHMENT_BACKUP_OUTPUT="${OUTPUT_PREFIX}-attachments.tgz"
+    if [ -z "${CONFIGURATION_PATH}" ]; then
+        /bin/tar cpfz "${ATTACHMENT_BACKUP_OUTPUT}" "${ATTACHMENTS_PATH}"
+    else
+        /bin/tar cpfz "${ATTACHMENT_BACKUP_OUTPUT}" "${ATTACHMENTS_PATH}" "${CONFIGURATION_PATH}"
+    fi
+    echo "    Created $ATTACHMENT_BACKUP_OUTPUT"
+}
+
+function dump_database() {
+    echo "  - Dumping $NATURAL_TOOL_NAME database"
+    DATABASE_DUMP_OUTPUT="${OUTPUT_PREFIX}-database-dump.sql.gz"
+    $PGENGINE/pg_dump "$DB_NAME" | gzip > "$DATABASE_DUMP_OUTPUT"
+    echo "    Created $DATABASE_DUMP_OUTPUT"
+}
+
+function main() {
+    read_config_file
+    TIMESTAMP=$(date +'%Y-%m-%d-%H-%M')
+    for NATURAL_TOOL_NAME in JIRA Confluence
+    do
+        echo "Backing up $NATURAL_TOOL_NAME"
+        setup
+        backup_attachments
+        dump_database
+        echo ""
+    done
+}
+
+main
