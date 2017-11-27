@@ -38,7 +38,9 @@ function setup() {
 
     LC_TOOL_NAME=$(echo "$NATURAL_TOOL_NAME" | tr '[A-Z]' '[a-z]')
     OUTPUT_PREFIX="$BACKUP_DIR/${LC_TOOL_NAME}-${TIMESTAMP}"
+}
 
+function mkbackupdir() {
     if [ ! -d "$BACKUP_DIR" ]; then
         echo "Creating directory $BACKUP_DIR"
         mkdir -p "$BACKUP_DIR"
@@ -68,10 +70,15 @@ function main() {
     TIMESTAMP=$(date +'%Y-%m-%d-%H-%M')
     for NATURAL_TOOL_NAME in JIRA Confluence
     do
-        echo "Backing up $NATURAL_TOOL_NAME"
         setup
-        backup_attachments
-        dump_database
+        if [ -z "$BACKUP_DIR" ]; then
+            echo "Skipping backup for $NATURAL_TOOL_NAME"
+        else
+            echo "Backing up $NATURAL_TOOL_NAME"
+            mkbackupdir
+            backup_attachments
+            dump_database
+        fi
         echo ""
     done
 }

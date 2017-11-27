@@ -4,9 +4,14 @@ This tool backs up JIRA Server and Confluence Server databases according the
 [best practices outlined by Atlassian](https://confluence.atlassian.com/adminjiraserver072/backing-up-data-828788079.html).
 
 ## Config file
-The backups are controlled by a config file.  The example config file
-`bin/atlassian-backup.conf` contains documentation on the variables that can be
-set in the config file.  It also contains example values.
+The backups are controlled by a config file.  The config file is written in the
+Bash shell language.  The example config file `configs/atlassian-backup.conf`
+contains documentation on the variables that can be set in the config file.  It
+also contains example values.
+
+You can skip JIRA backups by setting `JIRA_BACKUP_DIR` in the config file to the
+empty string.  Similarly, you can skip Confluence backups by setting
+`CONFLUENCE_BACKUP_DIR` to the empty string.
 
 ## Running atlassian-backup
 The default config file location is `/etc/atlassian-backup.conf`, but ordinarily
@@ -38,12 +43,12 @@ table using the command:
 ```
 crontab -e
 ```
-In the following example cron table, backups are created every weekday.
+In the following example cron table, backups are created daily.
 
 On the first of every month, a backup is created and retained indefinitely.
 Then, to save space, the daily backups from the preceding month are deleted:
 ```
-10 07 * * 2-6 /atlassian/atlassian-backup/bin/atlassian-backup /atlassian/atlassia
+10 07 * * * /atlassian/atlassian-backup/bin/atlassian-backup /atlassian/atlassia
 n-backup/configs/atlassian-backup.conf
 # On the first of each month, after the backup runs,
 # save the backups from the first and delete the rest.
