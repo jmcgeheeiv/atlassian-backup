@@ -38,15 +38,31 @@ Backing up Confluence
 ```
 
 ## Scheduling automatic backups with cron
-On UNIX it is convenient to run `atlassian-backup` using cron.  Edit your cron
-table using the command:
+On UNIX it is convenient to run `atlassian-backup` using cron.  The following backup
+scheme backs up JIRA and Confluence each morning.
+
+On the first of every month, a backup is created as usual.  Then, it is moved to the
+`monthly/` subdirectory, where it is retained indefinitely.  Finally, to save space,
+**all daily backups are removed from `$JIRA_BACKUP_DIR` and `$CONFLUENCE_BACKUP_DIR`**.
+Presumably these are just the backups from the preceding month.
+
+### Procedure
+
+Log in as user `jira`.
+
+The monthly backups will be retained in `$JIRA_BACKUP_DIR/monthly/` and
+`$CONFLUENCE_BACKUP_DIR/monthly/`, where `$JIRA_BACKUP_DIR` and
+`$CONFLUENCE_BACKUP_DIR` are defined in the config file.  Create these directories:
+```
+mkdir /atlassian/backups/jira/monthly/ /atlassian/backups/confluence/monthly/
+```
+
+Edit your cron table using the command:
 ```
 crontab -e
 ```
-In the following example cron table, backups are created daily.
 
-On the first of every month, a backup is created and retained indefinitely.
-Then, to save space, the daily backups from the preceding month are deleted:
+Add the following to your cron table:
 ```
 10 07 * * * /atlassian/atlassian-backup/bin/atlassian-backup /atlassian/atlassia
 n-backup/configs/atlassian-backup.conf
