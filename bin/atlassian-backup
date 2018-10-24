@@ -34,6 +34,12 @@ function setup() {
     eval BACKUP_DIR="\$${TOOL_NAME}_BACKUP_DIR"
     eval ATTACHMENTS_PATH="\$${TOOL_NAME}_ATTACHMENTS_PATH"
     eval CONFIGURATION_PATH="\$${TOOL_NAME}_CONFIGURATION_PATH"
+    eval DB_BACKEND="\$${TOOL_NAME}_DB_BACKEND"
+    if [ "${DB_BACKEND}" = 'mysql' ]; then
+        eval MYSQL_USER="\$${TOOL_NAME}_MYSQL_USER"
+        eval MYSQL_PASS="\$${TOOL_NAME}_MYSQL_PASS"
+        eval MYSQL_HOST="\$${TOOL_NAME}_MYSQL_HOST"
+    fi
     eval DB_NAME="\$${TOOL_NAME}_DB_NAME"
 
     LC_TOOL_NAME=$(echo "$NATURAL_TOOL_NAME" | tr '[A-Z]' '[a-z]')
@@ -61,7 +67,11 @@ function backup_attachments() {
 function dump_database() {
     echo "  - Dumping $NATURAL_TOOL_NAME database"
     DATABASE_DUMP_OUTPUT="${OUTPUT_PREFIX}-database-dump.sql.gz"
-    $PGENGINE/pg_dump "$DB_NAME" | gzip > "$DATABASE_DUMP_OUTPUT"
+    if [ "${DB_BACKEND}" = 'mysql' ]; then
+        $MYENGINE -u $MYSQL_USER -p $MYSQL_PASS -h $MYSQL_HOST "$DB_NAME" | gzip > "$DATABASE_DUMP_OUTPUT"
+    else
+        $PGENGINE/pg_dump "$DB_NAME" | gzip > "$DATABASE_DUMP_OUTPUT"
+    fi
     echo "    Created $DATABASE_DUMP_OUTPUT"
 }
 
