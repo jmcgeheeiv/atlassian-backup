@@ -68,7 +68,7 @@ function dump_database() {
     echo "  - Dumping $NATURAL_TOOL_NAME database"
     DATABASE_DUMP_OUTPUT="${OUTPUT_PREFIX}-database-dump.sql.gz"
     if [ "${DB_BACKEND}" = 'mysql' ]; then
-        $MYENGINE -u $MYSQL_USER -p $MYSQL_PASS -h $MYSQL_HOST "$DB_NAME" | gzip > "$DATABASE_DUMP_OUTPUT"
+        $MYENGINE --single-transaction --host="$MYSQL_HOST" --user="$MYSQL_USER" --password="$MYSQL_PASS" "$DB_NAME" | gzip > "$DATABASE_DUMP_OUTPUT"
     else
         $PGENGINE/pg_dump "$DB_NAME" | gzip > "$DATABASE_DUMP_OUTPUT"
     fi
