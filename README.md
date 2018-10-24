@@ -3,6 +3,8 @@
 This tool backs up JIRA Server and Confluence Server databases according the
 [best practices outlined by Atlassian](https://confluence.atlassian.com/adminjiraserver072/backing-up-data-828788079.html).
 
+MySQL and PostgreSQL databases are supported.
+
 ## Config file
 The backups are controlled by a config file.  The config file is written in the
 Bash shell language.  The example config file `configs/atlassian-backup.conf`
